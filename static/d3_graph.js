@@ -27,7 +27,7 @@ var simulation = d3.forceSimulation()
 .force("center", d3.forceCenter(width/2, height/2))
 .force("charge", d3.forceManyBody());
 //if the json file is successfully loaded, then execute the callback
-d3.json("../static/sample_graph.json", function (error, graph) {
+d3.json("../static/small_sample_graph.json", function (error, graph) {
     if (error) throw error;
     update(graph.links, graph.nodes); 
 })
