@@ -11,8 +11,8 @@
 
 </head>
 
-<body>
-    <div class="wrapper">
+<body style="height: 100%;">
+    <div class="wrapper" style="height: 100vh;">
         <div id="header-row" class="row">
             <ul class="nav nav-pills nav-fill col-8">
                 <li class="nav-item">
@@ -32,11 +32,11 @@
 
         <div id="workplace-row" class="row container-fluid">
             <div class="col-2">
-                <div id="select-paths-dropdown" class="select_paths">
-                    <span>Visualize top-N paths</span>
-                    <div class="dropdown">
+                <div id="select-paths-dropdown" >
+                    <span><strong>Visualize top-N paths</strong></span>
+                    <div class="dropdown select_paths">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton-path-selection" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Dropdown button
+                          Select top N paths
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-path-selection">
                           <a class="dropdown-item" href="#">Top 3 paths</a>
@@ -45,16 +45,18 @@
                         </div>
                       </div>
                 </div>
-                <div id="select-paths-concept-to-concept" class="select_paths">
-                    <span>Visualize the path between two concepts</span> <br><br>
-                    <label for="concept1">Concept 1: </label>
-                    <input type="text" name="concept1"><br><br>
-                    <label for="concept2">Concept 2: </label>
-                    <input type="text" name="concept2"><br><br>
+                <div id="select-paths-concept-to-concept">
+                    <span><strong>Visualize the path between two concepts</strong></span> <br>
+                    <div class="select_paths">
+                        <label for="concept1">Concept 1: </label>
+                        <input type="text" name="concept1"><br><br>
+                        <label for="concept2">Concept 2: </label>
+                        <input type="text" name="concept2"><br><br>
+                    </div>
                 </div>
             </div>
             <div class="col-8" id="canvas" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <svg id="svg_for_vis"></svg>
+                <svg id="svg_for_vis" class="border"></svg>
             </div>
         </div>
     </div>

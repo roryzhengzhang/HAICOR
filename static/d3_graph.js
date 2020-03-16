@@ -51,8 +51,10 @@ function update(links, nodes){
     .append('path')
     .attrs({
         'class': 'edgepath',
-        'fill-opacity': 0,
-        'stroke-opacity': 0,
+        'stroke-width': 0.5,
+        'stroke': '#aaa',
+        //'fill-opacity': 0,
+        //'stroke-opacity': 0,
         'id': function (d, i) {return 'edgepath' + i}
     })
     .style("pointer-events", "none");
@@ -88,8 +90,10 @@ function update(links, nodes){
     );
 
     node.append("circle")
-    .attr("r",5) //radius
-    .style("fill", function (d, i) {return colors(i);}); //fill the color
+    .attr("r",6) //radius
+    .style("fill", function (d, i) {return colors(i);}) //fill the color
+    .on("mouseover", node_mouseover)
+    .on("mouseout", node_mouseout);
 
     node.append("title")
     .text(function (d) {return d.id;});
@@ -141,4 +145,20 @@ d.fy = d.y;
 function dragged(d) { //d.fx and d.fy are set to the mouse position, so that during dragging the nodes stick with the mouse
 d.fx = d3.event.x; 
 d.fy = d3.event.y;
+}
+
+function node_mouseover(d, i)
+{
+    //d3.select(this).transition().duration(200).attr("r", 16)
+    d3.select(this).attr({
+        fill: "orange",
+        r: radius * 2
+      });
+    console.log("mouseover action");
+    
+}
+
+function node_mouseout(d, i)
+{
+    d3.select(this).transition().duration(100).attr("r", 6)
 }

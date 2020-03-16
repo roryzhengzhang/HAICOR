@@ -1,5 +1,10 @@
 #header-row {
     margin: 15px;
+    height: 10%;
+}
+
+#workplace-row {
+    height: 90%;
 }
 
 #header-row #platform-label {
@@ -14,4 +19,17 @@
     margin: 20px;
     text-align: center;
     padding: 5px;
+}
+
+#select-paths-dropdown {
+    width: 90%;
+}
+
+#select-paths-concept-to-concept {
+    width: 90%;
+}
+
+#svg_for_vis {
+    width: 95%;
+    height: 95%;
 }
