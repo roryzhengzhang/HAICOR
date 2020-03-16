@@ -1,0 +1,17 @@
+#header-row {
+    margin: 15px;
+}
+
+#header-row #platform-label {
+    text-align: center;
+}
+
+#select-paths-dropdown {
+    display: block;
+}
+
+.select_paths {
+    margin: 20px;
+    text-align: center;
+    padding: 5px;
+}
