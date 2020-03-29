@@ -2,41 +2,49 @@
     "nodes": [
       {
         "name": "Peter",
-        "id": 1
+        "id": 1,
+        "name_path": 12
       },
       {
         "name": "Michael",
-        "id": 2
+        "id": 2,
+        "name_path": 12
       },
       {
         "name": "Neo4j",
-        "id": 3
+        "id": 3,
+        "name_path": 12
       },
       {
         "name": "Graph Database",
-        "id": 4
+        "id": 4,
+        "name_path": 12
       }
     ],
     "links": [
       {
         "source": 1,
         "target": 2,
-        "type": "KNOWS"
+        "type": "KNOWS",
+        "num_path": [12]
       },
       {
         "source": 1,
         "target": 3,
-        "type": "FOUNDED"
+        "type": "FOUNDED",
+        "num_path": [12]
       },
       {
         "source": 2,
         "target": 3,
-        "type": "WORKS_ON"
+        "type": "WORKS_ON",
+        "num_path": [12]
       },
       {
         "source": 3,
         "target": 4,
-        "type": "IS_A"
+        "type": "IS_A",
+        "num_path": [12]
       }
     ]
   }
