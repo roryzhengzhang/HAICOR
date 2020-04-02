@@ -9,7 +9,6 @@
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
 <body style="height: 100%;">
@@ -56,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-8" id="canvas" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <div class="col-8" id="canvas" ondrop="drop(event)" >
                 <svg id="svg_for_vis" class="border"></svg>
             </div>
             <div class="col-2" id="story_zone">
@@ -72,13 +71,40 @@
                       'honor', 'belonging', 'contact', 'savings', 'idealism', 'rest'</p>
             </div>
         </div>
+
+    <!-- Node Modal -->
+<div class="modal fade" id="NodeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="Modal-node-name">Node Name: </span>
+                </div>
+                <input type="text" id="node-name-input" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" id="Modal-Save-Button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
     </div>
     <script src="http://d3js.org/d3.v4.min.js" type="text/javascript"></script>
     <script src="http://d3js.org/d3-selection-multi.v1.js"></script>
     <script src="../static/d3-tip.js"></script>
     <!-- <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> -->
-    <script src="../static/d3_graph.js" type="text/javascript"></script>
+    <script src="../static/vis_graph.js" type="text/javascript"></script>
     <script src="../static/path_selection.js" type="text/javascript"></script>
 </body>
 </html>

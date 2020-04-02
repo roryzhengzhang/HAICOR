@@ -11,6 +11,8 @@ $(document).ready(function() {
     // )
 
     $('.dropdown-item').click(function (){
+        // selected_tick = small_ticked;
+        // update(link_data, node_data);
         $(this).addClass('.dropdown-active')
         var item = $(this).text();
         console.log($(this).text());
@@ -20,7 +22,7 @@ $(document).ready(function() {
         {
             //console.log("id == path-3");
             restoreVisibility();
-            $('.node, .link, .edgelabel, .edgepath').each(function (){
+            $('.nodes, .links, .edgelabel, .edgepath').each(function (){
                 
                 var array_num_index = JSON.parse("["+$(this).attr('num_index')+"]");
 
@@ -31,11 +33,12 @@ $(document).ready(function() {
                     $(this).hide();
                 }
             })
+
         }
         else if($(this).attr('id') == 'path-5')
         {
             restoreVisibility();
-            $('.node, .link, .edgelabel, .edgepath').each(function (){
+            $('.nodes, .links, .edgelabel, .edgepath').each(function (){
                 
                 var array_num_index = JSON.parse("["+$(this).attr('num_index')+"]")
 
@@ -50,7 +53,7 @@ $(document).ready(function() {
         else if($(this).attr('id') == 'path-10')
         {
             restoreVisibility();
-            $('.node, .link, .edgelabel, .edgepath').each(function (){
+            $('.nodes, .links, .edgelabel, .edgepath').each(function (){
                 
                 var array_num_index = JSON.parse("["+$(this).attr('num_index')+"]")
 
@@ -70,10 +73,41 @@ $(document).ready(function() {
 
 function restoreVisibility()
 {
-    $('.node, .link, .edgelabel, .edgepath').each(function ()
+    $('.nodes, .links, .edgelabel, .edgepath').each(function ()
     {
         $(this).show();
     })
+}
+
+function small_ticked() {
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node
+        .attr("transform", function(d) {
+            return "translate(" + d.x + "," + d.y + ")";
+        });
+
+    edgepaths.attr('d', function(d) { var path='M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y;
+                            //console.log(d)
+                            return path});       
+
+    edgelabels.attr('transform',function(d,i){
+        if (d.target.x<d.source.x){
+            bbox = this.getBBox();
+            rx = bbox.x+bbox.width/2;
+            ry = bbox.y+bbox
+            .height/2;
+            return 'rotate(180 '+rx+' '+ry+')';
+            }
+        else {
+            return 'rotate(0)';
+            }
+    });
+
 }
 
 

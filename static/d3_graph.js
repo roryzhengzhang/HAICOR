@@ -42,6 +42,7 @@ var tool_tip = d3.tip()
   })
 svg.call(tool_tip);
 // create the simulation var, each 'force' methods add a type of force performed on the svg
+
 var simulation = d3.forceSimulation()
 .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(200).strength(1))
 .force("center", d3.forceCenter(width/2, height/2))
@@ -91,43 +92,7 @@ function restart()
     .attr("num_index", function (d) {return d.num_path} )
     .attr("marker-end", 'url(#arrowhead)')
     .on("mousedown", link_mousedown)
-
-    // edgepaths = svg.selectAll(".edgepath")
-    // .data(link_data)
-    // .enter()
-    // .append('path')
-    // .attrs({
-    //     'class': 'edgepath',
-    //     'stroke-width': 0.8,
-    //     'stroke': function (d,i) {return select_edge_color(d)},
-    //     'num_index': function (d) {return d.num_path},
-    //     //'fill-opacity': 0,
-    //     //'stroke-opacity': 0,
-    //     'id': function (d, i) {return 'edgepath' + i}
-    // })
-    // .style("pointer-events", "none");
-
-    // edgelabels = svg.selectAll(".edgelabel")
-    // .data(link_data)
-    // .enter()
-    // .append('text')
-    // .style("pointer-events", "none")
-    // .attrs({
-    //     'class': 'edgelabel',
-    //     'id': function (d, i) {return 'edgelabel' + i},
-    //     'num_index': function (d) {return d.num_path},
-    //     'font-size': 10,
-    //     'fill': function (d,i) {return select_edge_color(d)}
-    // });
-
-    // edgelabels.append('textPath')
-    // .attr('xlink:href', function (d, i) {return '#edgepath' + i})
-    // .style("text-anchor", "middle")
-    // .style("pointer-events", "none")
-    // .attr("startOffset", "50%")
-    // .attr("num_index", function (d) {return d.num_path})
-    // .text(function (d) {return d.type});
-
+    
     new_link.exit().remove()
 
     simulation.nodes(node_data).on("tick", ticked);
@@ -136,7 +101,7 @@ function restart()
 
 function update(links, nodes){
     console.log("links are: "+links)
-    link = svg.append("g")
+    link = linkg
     .attr("class", "links")
     .data(links) //map the join array 'links' to the selected DOM elements
     .enter() //identify any DOM element need to be added when the join array is longer than the selection
@@ -153,51 +118,49 @@ function update(links, nodes){
         return d.type; //label the edge with as 'type' property
     })
 
-    // //edgepaths = svg.selectAll(".edgepath")
-    // link
-    // // .data(links)
-    // // .enter()
-    // .append('path')
-    // .attrs({
-    //     'class': 'edgepath',
-    //     'stroke-width': 0.8,
-    //     'stroke': function (d,i) {return select_edge_color(d)},
-    //     'num_index': function (d) {return d.num_path},
-    //     //'fill-opacity': 0,
-    //     //'stroke-opacity': 0,
-    //     'id': function (d, i) {return 'edgepath' + i}
-    // })
-    // .style("pointer-events", "none");
+    edgepaths = svg.selectAll(".edgepath")
+    .data(links)
+    .enter()
+    .append('path')
+    .attrs({
+        'class': 'edgepath',
+        'stroke-width': 0.8,
+        'stroke': function (d,i) {return select_edge_color(d)},
+        'num_index': function (d) {return d.num_path},
+        //'fill-opacity': 0,
+        //'stroke-opacity': 0,
+        'id': function (d, i) {return 'edgepath' + i}
+    })
+    .style("pointer-events", "none");
 
-    // edgepaths = svg.selectAll(".edgepath")
+    edgepaths = svg.selectAll(".edgepath")
 
-    // //edgelabels = svg.selectAll(".edgelabel")
-    // // .data(links)
-    // // .enter()
-    // link
-    // .append('text')
-    // .style("pointer-events", "none")
-    // .attrs({
-    //     'class': 'edgelabel',
-    //     'id': function (d, i) {return 'edgelabel' + i},
-    //     'num_index': function (d) {return d.num_path},
-    //     'font-size': 10,
-    //     'fill': function (d,i) {return select_edge_color(d)}
-    // });
+    edgelabels = svg.selectAll(".edgelabel")
+    .data(links)
+    .enter()
+    .append('text')
+    .style("pointer-events", "none")
+    .attrs({
+        'class': 'edgelabel',
+        'id': function (d, i) {return 'edgelabel' + i},
+        'num_index': function (d) {return d.num_path},
+        'font-size': 10,
+        'fill': function (d,i) {return select_edge_color(d)}
+    });
 
-    // svg.selectAll(".edgelabel")
-    // //edgelabels
-    // .append('textPath')
-    // .attr('xlink:href', function (d, i) {return '#edgepath' + i})
-    // .style("text-anchor", "middle")
-    // .style("pointer-events", "none")
-    // .attr("startOffset", "50%")
-    // .attr("num_index", function (d) {return d.num_path})
-    // .text(function (d) {return d.type});
+    svg.selectAll(".edgelabel")
+    //edgelabels
+    .append('textPath')
+    .attr('xlink:href', function (d, i) {return '#edgepath' + i})
+    .style("text-anchor", "middle")
+    .style("pointer-events", "none")
+    .attr("startOffset", "50%")
+    .attr("num_index", function (d) {return d.num_path})
+    .text(function (d) {return d.type});
 
-    // edgelabels = svg.selectAll(".edgelabel")
+    edgelabels = svg.selectAll(".edgelabel")
 
-    node = svg.append("g").selectAll(".node")
+    node = nodeg.selectAll(".node")
     .data(nodes)
     .enter()
     .append("g")
