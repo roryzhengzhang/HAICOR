@@ -1,4 +1,5 @@
 # large files that are downloadable or generatable
 conceptnet-assertions-5.7.0.csv.gz
+englishnet-assertions-5.7.0.csv.gz
 knowledge-database.sqlite3
 knowledge-database.sqlite3-journal

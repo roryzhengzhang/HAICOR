@@ -1,4 +1,4 @@
 {
-    "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:password@192.168.1.100:3306/conceptnet",
+    "SQLALCHEMY_DATABASE_URI": "sqlite:///data/knowledge-database.sqlite3",
     "SQLALCHEMY_TRACK_MODIFICATIONS": false
 }
