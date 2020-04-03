@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flask_sqlalchemy import SQLAlchemy, sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
 
 # database configuration
 database: SQLAlchemy = SQLAlchemy()

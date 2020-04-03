@@ -11,12 +11,14 @@ KNOWLEDGE_DATABASE_PART_OF_SPEECH_SOURCE = knowledge/data/part_of_speeches.csv
 KNOWLEDGE_DATABASE_DEPEND = knowledge/conceptnet/__init__.py knowledge/conceptnet/models.py knowledge/__init__.py knowledge/__main__.py
 
 # rules
-.PHONY: all clean
+.PHONY: all clean knowledge
 
-all: $(CONCEPTNET_TARGET) $(KNOWLEDGE_DATABASE_TARGET)
+all: knowledge
 
 clean:
 	rm -f $(CONCEPTNET_TARGET) $(ENGLISHNET_TARGET) $(KNOWLEDGE_DATABASE_TARGET)
+
+knowledge: $(CONCEPTNET_TARGET) $(ENGLISHNET_TARGET) $(KNOWLEDGE_DATABASE_TARGET)
 
 $(CONCEPTNET_TARGET):
 	wget -qNP $(@D) --show-progress $(CONCEPTNET_SOURCE)
