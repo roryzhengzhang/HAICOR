@@ -13,8 +13,8 @@ class Language(db.Model):
     __tablename__ = "languages"
 
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String, unique=True, nullable=False)
-    name = db.Column(db.String, unique=True, nullable=False)
+    code = db.Column(db.String(256), unique=True, nullable=False)
+    name = db.Column(db.String(256), unique=True, nullable=False)
 
     concepts = db.relation("Concept", back_populates="language")
 
@@ -34,7 +34,7 @@ class Relation(db.Model):
     __tablename__ = "relations"
 
     id = db.Column(db.Integer, primary_key=True)
-    relation = db.Column(db.String, unique=True, nullable=False)
+    relation = db.Column(db.String(256), unique=True, nullable=False)
     directed = db.Column(db.Boolean, nullable=False)
 
     assertions = db.relation("Assertion", back_populates="relation")
@@ -57,8 +57,8 @@ class PartOfSpeech(db.Model):
     __tablename__ = "part_of_speeches"
 
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String, unique=True, nullable=False)
-    name = db.Column(db.String, unique=True, nullable=False)
+    code = db.Column(db.String(256), unique=True, nullable=False)
+    name = db.Column(db.String(256), unique=True, nullable=False)
 
     concepts = db.relation("Concept", back_populates="part_of_speech")
 
@@ -82,9 +82,9 @@ class Concept(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     language_id = db.Column(db.Integer, db.ForeignKey(Language.id),
                             nullable=False)
-    text = db.Column(db.String, nullable=False)
+    text = db.Column(db.String(256), nullable=False)
     part_of_speech_id = db.Column(db.Integer, db.ForeignKey(PartOfSpeech.id))
-    suffix = db.Column(db.String)
+    suffix = db.Column(db.String(256))
 
     __table_args__ = (
         db.UniqueConstraint(language_id, text, part_of_speech_id, suffix),
@@ -155,6 +155,7 @@ class Assertion(db.Model):
                          nullable=False)
     end_id = db.Column(db.Integer, db.ForeignKey(Concept.id),
                        nullable=False)
+    information = db.Column(db.JSON)
 
     __table_args__ = (
         db.UniqueConstraint(relation_id, start_id, end_id),
@@ -173,16 +174,18 @@ class Assertion(db.Model):
                                                   end_id=end.id).scalar()
 
     @staticmethod
-    def create(session, relation: Relation, start: Concept, end: Concept) -> Assertion:
+    def create(session, relation: Relation, start: Concept, end: Concept,
+               information: dict) -> Assertion:
         if not Assertion.exists(session, relation, start, end):
-            session.add(Assertion(relation=relation, start=start, end=end))
+            session.add(Assertion(relation=relation, start=start, end=end,
+                                  information=information))
 
         return session.query(Assertion).filter_by(relation_id=relation.id,
                                                   start_id=start.id,
                                                   end_id=end.id).one()
 
     @staticmethod
-    def create_from_uri(session, uri: str) -> Assertion:
+    def create_from_uri(session, uri: str, information: dict) -> Assertion:
         assert uri.startswith("/a/"), "Invalid URI for Assertion object"
 
         uri = [i.strip()[:-1] for i in uri[4:-1].split(',')]
@@ -192,5 +195,6 @@ class Assertion(db.Model):
             session,
             session.query(Relation).filter_by(relation=uri[0]).one(),
             Concept.create_from_uri(session, uri[1]),
-            Concept.create_from_uri(session, uri[2])
+            Concept.create_from_uri(session, uri[2]),
+            information
         )
