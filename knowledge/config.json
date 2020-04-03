@@ -1,0 +1,4 @@
+{
+    "SQLALCHEMY_DATABASE_URI": "sqlite:///data/knowledge-database.sqlite3",
+    "SQLALCHEMY_TRACK_MODIFICATIONS": false
+}
