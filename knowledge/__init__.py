@@ -4,13 +4,11 @@ import os
 
 from flask import Flask
 
-from knowledge.conceptnet import conceptnet
-from knowledge.conceptnet.models import database
+import knowledge.conceptnet as conceptnet
 
-# flask configuration
-app: Flask = Flask(__name__)
+app = Flask(__name__)
 app.config.from_json(os.path.join(os.path.dirname(__file__), "config.json"))
 
-app.register_blueprint(conceptnet)
+app.register_blueprint(conceptnet.conceptnet)
 
-database.init_app(app)
+conceptnet.database.init_app(app)

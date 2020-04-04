@@ -1,4 +1,4 @@
-# large files that are downloadable or generatable
+# files generatable via make
 conceptnet-assertions-5.7.0.csv.gz
 englishnet-assertions-5.7.0.csv.gz
 knowledge-database.sqlite3
