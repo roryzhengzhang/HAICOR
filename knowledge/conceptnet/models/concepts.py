@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from knowledge.conceptnet.models import database
+from . import database
 
 # short hands
 FK = database.ForeignKey
@@ -15,7 +15,7 @@ class Language(database.Model):
     __tablename__ = "languages"
 
     id = Column(Integer, primary_key=True)
-    code = Column(String, index=True, unique=True, nullable=False)
+    code = Column(String, unique=True, nullable=False)
     name = Column(String)
 
     concepts = relationship("Concept", back_populates="language")
@@ -25,7 +25,7 @@ class PartOfSpeech(database.Model):
     __tablename__ = "part_of_speeches"
 
     id = Column(Integer, primary_key=True)
-    code = Column(String, index=True, unique=True, nullable=False)
+    code = Column(String, unique=True, nullable=False)
     name = Column(String)
 
     concepts = relationship("Concept", back_populates="part_of_speech")
@@ -49,9 +49,3 @@ class Concept(database.Model):
     in_assertions = relationship("Assertion",
                                  foreign_keys="Assertion.target_id",
                                  back_populates="target")
-
-    def uri(self) -> str:
-        """Generate ConceptNet uri for the given concept"""
-        return f"/c/{self.lang.code}/{self.text}" \
-            + (f"/{self.speech.code}" if self.speech else "") \
-            + (f"/{self.suffix}" if self.suffix else "")

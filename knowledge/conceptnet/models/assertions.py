@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from knowledge.conceptnet.models import database
+from . import database
 
 # short hands
 FK = database.ForeignKey
@@ -17,14 +17,10 @@ class Relation(database.Model):
     __tablename__ = "relations"
 
     id = Column(Integer, primary_key=True)
-    relation = Column(String, index=True, unique=True, nullable=False)
+    relation = Column(String, unique=True, nullable=False)
     directed = Column(Boolean, nullable=False)
 
     assertions = relationship("Assertion", back_populates="relation")
-
-    def uri(self) -> str:
-        """Generate ConceptNet uri for the given relation"""
-        return f"/r/{self.relation}"
 
 
 class Dataset(database.Model):
@@ -33,9 +29,7 @@ class Dataset(database.Model):
     id = Column(Integer, primary_key=True)
     uri = Column(String, index=True, unique=True, nullable=False)
 
-    def uri(self) -> str:
-        """Generate ConceptNet uri for the given dataset"""
-        return f"/d/{self.uri}"
+    assertions = relationship("Assertion", back_populates="dataset")
 
 
 class License(database.Model):
@@ -43,6 +37,8 @@ class License(database.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True, unique=True, nullable=False)
+
+    assertions = relationship("Assertion", back_populates="license")
 
 
 class Assertion(database.Model):
@@ -55,6 +51,9 @@ class Assertion(database.Model):
     target_id = Column(Integer, FK("concepts.id"), index=True, nullable=False)
     dataset_id = Column(Integer, FK("datasets.id"))
     license_id = Column(Integer, FK("licenses.id"))
+    surface_text = Column(String)
+    surface_source = Column(String)
+    surface_target = Column(String)
     weight = Column(Float, nullable=False)
 
     relation = relationship("Relation", back_populates="assertions")
@@ -64,28 +63,9 @@ class Assertion(database.Model):
     target = relationship("Concept",
                           foreign_keys="Assertion.target_id",
                           back_populates="in_assertions")
-    surfaces = relationship("Surface", back_populates="assertion")
+    dataset = relationship("Dataset", back_populates="assertions")
+    license = relationship("License", back_populates="assertions")
     sources = relationship("Source", back_populates="assertion")
-
-    def uri(self) -> str:
-        """Generate ConceptNet uri for the given assertion"""
-        return (f"/a/[{self.relation.uri()}/,"
-                f"{self.source.uri()}/,{self.target.uri()}/]")
-
-
-class Surface(database.Model):
-    __tablename__ = "surfaces"
-
-    id = Column(Integer, primary_key=True)
-    assertion_id = Column(Integer,
-                          FK("assertions.id"),
-                          index=True,
-                          nullable=False)
-    text = Column(String, nullable=False)
-    start = Column(String, nullable=False)
-    end = Column(String, nullable=False)
-
-    assertion = relationship("Assertion", back_populates="surfaces")
 
 
 class Source(database.Model):
