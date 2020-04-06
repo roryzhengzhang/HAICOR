@@ -14,12 +14,12 @@ def uri_of(object: Union[Concept, Assertion,
     """Generates ConceptNet URI for the given object."""
 
     if isinstance(object, Concept):  # concept object
-        return f"/c/{object.lang.code}/{object.text}" \
-            + (f"/{object.speech.code}" if object.speech else "") \
+        return f"/c/{object.language.code}/{object.text}" \
+            + (f"/{object.part_of_speech.code}" if object.speech else "") \
             + (f"/{object.suffix}" if object.suffix else "")
     elif isinstance(object, Assertion):  # assertion object
-        return f"/a/[{(uri_of(object.relation))}/,{uri_of(object.source)}/,\
-            {uri_of(object.target)}/]"
+        return (f"/a/[{(uri_of(object.relation))}/,{uri_of(object.source)}/,"
+                "{uri_of(object.target)}/]")
     elif isinstance(object, Dataset):  # dataset object
         return f"/d/{object.uri}"
     elif isinstance(object, Relation):  # relation object

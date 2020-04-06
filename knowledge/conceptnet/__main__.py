@@ -1,24 +1,19 @@
 from __future__ import annotations
 
 import argparse
-import csv
-import gzip
 import json
 import os
-import time
-
+import sqlite3 as sqlite
 from flask import Flask
 
-from .models import database, utility
+from .models import database
+from .models.concepts import *
+from .models.assertions import *
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("database", type=str,
-                    help="SQLite database to be generated")
-parser.add_argument("conceptnet", type=str,
-                    help="Precompiled ConceptNet assertions")
-parser.add_argument("--config-dir", type=str, default="data/",
-                    help="Directory containing the configuration files (.csv)")
+parser.add_argument("source", type=str, help="Source SQLite database")
+parser.add_argument("target", type=str, help="Target SQLAlchemy database")
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -26,7 +21,7 @@ if __name__ == "__main__":
     # temporary flask application for database population
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
-    app.config["SQLALCHEMY_DATABASE_URI"] += os.path.abspath(args.database)
+    app.config["SQLALCHEMY_DATABASE_URI"] += os.path.abspath(args.target)
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     database.init_app(app)
@@ -36,101 +31,50 @@ if __name__ == "__main__":
         database.drop_all()
         database.create_all()
 
-        DIR = os.path.abspath(args.config_dir)
-
-        with open(os.path.join(DIR, "languages.csv"), "r") as file:
-            for code, name in csv.reader(file):
-                utility.create_language(database.session, code, name)
-
-        with open(os.path.join(DIR, "part_of_speeches.csv"), "r") as file:
-            for code, name in csv.reader(file):
-                utility.create_part_of_speech(database.session, code, name)
-
-        with open(os.path.join(DIR, "relations.csv"), "r") as file:
-            for relation, directed in csv.reader(file):
-                utility.create_relation(database.session, relation,
-                                        directed == "directed")
-
         database.session.commit()
 
-        with gzip.open(args.conceptnet, "rt") as file:
-            start = time.time()
-            reader = csv.reader(file, delimiter='\t')
+    source_db = sqlite.connect(os.path.abspath(args.source))
+    target_db = sqlite.connect(os.path.abspath(args.target))
 
-            for i, (uri, relation, source, target, data) in enumerate(reader):
-                current = time.time() - start
-                print(f"{i + 1} of lines processed ({current:.2f}s, "
-                      f"{current / (i + 1) * 1000:.2f}ms/line)", end='\r')
+    # languages
+    values = source_db.execute("SELECT * FROM languages").fetchall()
+    target_db.executemany("INSERT INTO languages VALUES(?,?,?)", values)
 
-                source = source.split('/')[2:]
-                source = (source + [None for _ in range(4 - len(source))]
-                          if 2 <= len(source) <= 3 else
-                          source[:3] + ['/' + '/'.join(source[3:])])
-                utility.create_concept(database.session, *source)
+    # part_of_speeches
+    values = source_db.execute("SELECT * FROM part_of_speeches").fetchall()
+    target_db.executemany("INSERT INTO part_of_speeches VALUES(?,?,?)", values)
 
-                if relation == "/r/ExternalURL":
-                    continue
+    # concepts
+    values = source_db.execute("SELECT * FROM concepts").fetchall()
+    target_db.executemany("INSERT INTO concepts VALUES(?,?,?,?,?)",
+                          (i[:-1] for i in values))
 
-                target = target.split('/')[2:]
-                target = (target + [None for _ in range(4 - len(target))]
-                          if 2 <= len(target) <= 3 else
-                          target[:3] + ['/' + '/'.join(target[3:])])
-                utility.create_concept(database.session, *target)
+    # relations
+    values = source_db.execute("SELECT * FROM relations").fetchall()
+    target_db.executemany("INSERT INTO relations VALUES(?,?,?)", values)
 
-            print()
+    # datasets
+    values = source_db.execute("SELECT * FROM datasets").fetchall()
+    target_db.executemany("INSERT INTO datasets VALUES(?,?)", values)
 
-        database.session.commit()
+    # licenses
+    values = source_db.execute("SELECT * FROM licenses").fetchall()
+    target_db.executemany("INSERT INTO licenses VALUES(?,?)", values)
 
-        with gzip.open(args.conceptnet, "rt") as file:
-            start = time.time()
-            reader = csv.reader(file, delimiter='\t')
+    # assertions
+    values = source_db.execute("SELECT * FROM assertions").fetchall()
+    target_db.executemany("INSERT INTO assertions VALUES(?,?,?,?,?,?,?,?,?,?)",
+                          (i[:-1] for i in values))
 
-            for i, (uri, relation, source, target, data) in enumerate(reader):
-                current = time.time() - start
-                print(f"{i + 1} of lines processed ({current:.2f}s, "
-                      f"{current / (i + 1) * 1000:.2f}ms/line)", end='\r')
+    # sources
+    for id, data in source_db.execute("SELECT id, data FROM assertions"):
+        sources = json.loads(data)["sources"]
 
-                if relation == "/r/ExternalURL":
-                    continue
-
-                data = json.loads(data)
-
-                surface = ([None, None, None]
-                           if "surfaceText" not in data.keys() else
-                           [data["surfaceText"],
-                            data["surfaceStart"], data["surfaceEnd"]])
-
-                utility.create_assertion(database.session,
-                                         relation,
-                                         source,
-                                         target,
-                                         data["dataset"],
-                                         data["license"],
-                                         surface,
-                                         data["weight"])
-
-            print()
-
-        database.session.commit()
-
-        with gzip.open(args.conceptnet, "rt") as file:
-            start = time.time()
-            reader = csv.reader(file, delimiter='\t')
-
-            for i, (uri, relation, source, target, data) in enumerate(reader):
-                current = time.time() - start
-                print(f"{i + 1} of lines processed ({current:.2f}s, "
-                      f"{current / (i + 1) * 1000:.2f}ms/line)", end='\r')
-
-                if relation == "/r/ExternalURL":
-                    continue
-
-                data = json.loads(data)
-                for index, source in enumerate(data["sources"]):
-                    for field, value in source.items():
-                        utility.create_source(database.session, uri, index,
-                                              field, value)
-
-            print()
-
-        database.session.commit()
+        for index, source in enumerate(sources):
+            for field, value in source.items():
+                target_db.execute("INSERT INTO sources(assertion_id,[index],"
+                                  "field,value) VALUES(?,?,?,?)",
+                                  (id, index, field, value))
+    target_db.commit()
+    target_db.close()
+    source_db.close()
