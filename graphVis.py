@@ -37,6 +37,7 @@ def main():
     #add 'len(results)' vertices into graph 
     g.add_vertices(len(results))
     g.vs['name'] = results
+    edge_index = 0
     #print(g.vs['name'])
     for rel in relations:
         for v1 in results:
@@ -73,7 +74,9 @@ def main():
                                 id = id + 1
                             
                             #add the edge
-                            json_temp['links'].append({"source": id_v1, "target": id_v2, "type": rel, 'num_path': find_path_index(extract_path, phrase)})
+                            json_temp['links'].append({"id": edge_index, "source": id_v1, "target": id_v2, "type": rel, 'num_path': find_path_index(extract_path, phrase),
+                                "source_meaning": "word meaning in "+rel, "target_meaning": "word meaning in "+rel, "weight": 1, "come_from": "WordNet"})
+                            edge_index = edge_index+1
 
     #print("number of vextex: "+str(len(g.vs)))
     #print("number of edges: "+str(len(g.es)))

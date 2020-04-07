@@ -11,21 +11,40 @@ def index():
     resp.cache_control.max_age = 1
     return resp
 
-# @app.after_request
-# def add_header(r):
-#     """
-#     Add headers to both force latest IE rendering engine or Chrome Frame
-#     """
-#     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-#     r.headers["Pragma"] = "no-cache"
-#     r.headers["Expires"] = "0"
-#     r.headers['Cache-Control'] = 'public, max-age=0'
-#     return r
+
+@app.route('/task_description')
+def task_description():
+    resp = make_response(render_template('task_description.html', css=url_for('static', filename="main.css")))
+    return resp
+
+@app.route('/human_needs_explanation')
+def human_needs_explanation():
+    resp = make_response(render_template('human_needs_explanation.html', css=url_for('static', filename="main.css"),  img_source=url_for('static', filename="human_needs_explanation.JPG")))
+    return resp
+
+@app.route('/commonsense_explanation')
+def commonsense_explanation():
+    resp = make_response(render_template('commonsense_explanation.html', css=url_for('static', filename="main.css"),  img_source=url_for('static', filename="sample_kg.JPG"), 
+    further_step_image=url_for('static', filename="step-by-step image.png")))
+    return resp
+
+@app.route('/story_example')
+def story_example():
+    resp = make_response(render_template('story_example.html', css=url_for('static', filename="main.css"),  img_source=url_for('static', filename="story_example.JPG")))
+    return resp
+
+@app.route('/visualized_explanation')
+def visualized_exp():
+    resp = make_response(render_template('visualized_explanation.html', css=url_for('static', filename="main.css"), 
+     img_source=url_for('static', filename="visualized_sample.JPG"),
+     img_star_source=url_for('static', filename="star_chart.JPG"),
+     img_bar_source=url_for('static', filename="path_influence_chart.JPG")))
+    return resp
 
 @app.route('/test')
 def test():
     #print(os.path.dirname(app.instance_path))
-    resp = make_response(render_template('index.html', css=url_for('static', filename="main.css")))
+    resp = make_response(render_template('test.html', css=url_for('static', filename="main.css")))
     resp.headers['Access-Control-Allow-Origin'] = '*' #to support the cross origin request
     resp.cache_control.max_age = 1
     return resp

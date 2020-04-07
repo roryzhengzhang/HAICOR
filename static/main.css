@@ -4,12 +4,53 @@
 }
 
 #workplace-row {
-    height: 90%;
+    height: 80%;
+}
+
+#button-row {
+    height: 10%;
+    align-items: center;
 }
 
 #header-row #platform-label {
     text-align: center;
 }
+
+.button-div {
+    margin-top: 20px;
+}
+
+.navbar {
+    display: block;
+    width: 100%;
+}
+
+.navbar-brand {
+    padding: 10px;
+    padding-left: 15px;
+}
+
+#navbar-brand {
+    width: auto;
+    height: auto;
+}
+
+#task-text {
+    padding: 10px;
+    margin-left: 3%;
+    margin-right: 3%;
+}
+
+.page_title {
+    text-align: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#human-needs-image {
+    width: 100%;
+}
+
 
 #select-paths-dropdown {
     display: block;

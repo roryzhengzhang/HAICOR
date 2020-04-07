@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block header %}
+    <nav class="navbar navbar-light bg-light" style="background-color: #e3f2fd;">
+        <span class="navbar-brand mb-0 h1">HAICOR</span>
+    </nav>
+    <h2 class="page_title"> Task Description </h2>
+    <div id="task-text">
+        <h4>AI's task</h4>
+        <p>We have an smart AI whose job is to read a simple story and speculate the basic human needs behind the character's behavior. However, 
+        most of these human needs are not spoken out in the story, the AI has to reason about the answer based on its commonsense knowledge.
+        AI's knowledge can be represented as a connected graph like below, where each node represents a specific concept (existent: book, car, 
+        shop, etc; non-existent: morning, happy, eat, etc) and edge correpsonds to the relation between two concepts (comedy 'causes' happy). This
+        knowledge graph enables AI to 'think deeper' than just stay on the literal description of story.  </p>
+
+        <h4>Your task </h4>
+        <p> We have an smart AI whose job is to read a simple story and speculate the basic human needs behind the character's behavior. However, 
+        most of these human needs are not spoken out in the story, the AI has to reason about the answer based on its commonsense knowledge.
+        AI's knowledge can be represented as a connected graph like below, where each node represents a specific concept (existent: book, car, 
+        shop, etc; non-existent: morning, happy, eat, etc) and edge correpsonds to the relation between two concepts (comedy 'causes' happy). This
+        knowledge graph enables AI to 'think deeper' than just stay on the literal description of story.</p>
+
+        <div style="text-align: center" class="button-div">
+            <a class="btn btn-primary" href="{{url_for('human_needs_explanation')}}">Next</a>
+        </div>
+    </div>
+{% endblock header %}

@@ -9,7 +9,8 @@ var svg = d3.select("svg"),
     selected_node, selected_target_node,
     selected_source_node,
     selected_link, new_line,
-    should_create = false,
+    should_modify = false,
+    delete_node = false,
     selected_tick,
     selected_link,
     drawing_line = false;
@@ -25,12 +26,44 @@ var tool_tip = d3.tip()
   .html(function(d) {
     if (drawing_line && d !== selected_node) {
         // highlight and select target node
-        console.log("change the target node to: "+d.name);
+        //console.log("change the target node to: "+d.name);
         selected_target_node = d;
     }
-    return "<strong>Node:</strong> <span style='color:red'>" + d.name + "</span>";
+
+    var result = "<strong>Node:</strong> <span style='color:red'>"+d.name+"</span> <br>"
+    link_data.forEach(function (edge) {
+        //console.log("edge source: "+edge.source+"; edge target: "+edge.target+"; node.id: "+d.id)
+        if($('#link'+edge.id).is(':visible'))
+        {
+            if(edge.source.id == d.id)
+            {
+                //console.log("edge.source meaning: "+edge.source_meaning)
+                result = result.concat("<span>Word meaning in "+edge.type+": </span> <span> "+edge.source_meaning+"</span> <br>")
+            }
+            else if(edge.target.id == d.id)
+            {
+                //console.log("edge.target meaning: "+edge.target_meaning)
+                result = result.concat("<span>Word meaning in "+edge.type+": </span> <span> "+edge.target_meaning+"</span> <br>")
+            }
+        }
+        
+    })
+    //return "<strong>Node:</strong> <span style='color:red'>" + d.name + "</span>";
+    return result;
   })
 svg.call(tool_tip);
+
+//create the tooltip
+var tool_tip_edge = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    console.log("edge tool tip invoked")
+    return "<strong>Edge:</strong> <span style='color:red'>" + d.type + "</span> <br>"+
+    "<strong>Edge source:</strong> <span> "+d.come_from+"</span> <br>"+
+    "<strong>Edge weight:</strong> <span>"+d.weight+"</span>";
+  })
+svg.call(tool_tip_edge);
 
 d3.select(window)
     .on("keydown", keydown)
@@ -38,13 +71,6 @@ d3.select(window)
     .on("mousemove", mousemove)
     .on("mouseup", mouseup)
 
-// d3.select("#content").on("mousemove", mousemove)
-//     .on("mouseup", mouseup)
-
-// svg.append("rect")
-//     .attr("width", width)
-//     .attr("height", height)
-//     .on("mousedown", mousedown);
 
 // build the arrow.
 svg.append("svg:defs").selectAll("marker")
@@ -97,40 +123,57 @@ d3.select("svg")
 function update(links, nodes){
     console.log("call update")
 
+    // link = g.selectAll(".links")
+    //     .data(links, d => d.id)
+    //     .enter()
+    //     .append("line")
+    //     .attr("class", "links")
+    //     .attr("stroke-width", 2)
+    //     .attr('num_index', function (d) {return d.num_path})
+    //     .attr("stroke", function (d,i) {return select_edge_color(d)})
+    //     .attr('marker-end','url(#end)')
+
     link = g.selectAll(".links")
         .data(links);
-    link = link.enter().append("line")
+
+    link_g = link.enter().append("line")
         .attr("class", "links")
         .attr("stroke-width", 2)
+        .attr("id", function (d, i) {return "link" + i;})
         .attr('num_index', function (d) {return d.num_path})
         .attr("stroke", function (d,i) {return select_edge_color(d)})
         .attr('marker-end','url(#end)')
-        .merge(link);
+
+    link = link.merge(link_g)
 
     link.exit().remove();
 
     edgepaths = g.selectAll(".edgepath")
-        .data(links);
+    .data(links);
+
     edgepaths = edgepaths.enter()
-        .append('path')
-        .attr('class', 'edgepath')
-        .attr('fill-opacity', 0)
-        .attr('stroke-opacity', 0)
-        .attr('num_index', function (d) {return d.num_path})
-        .attr('id', function (d, i) {return 'edgepath' + i})
-        .style("pointer-events", "none").merge(edgepaths);
+    .append('path')
+    .attr('class', 'edgepath')
+    .attr('fill-opacity', 0)
+    .attr('stroke-opacity', 0)
+    .attr('num_index', function (d) {return d.num_path})
+    .attr('id', function (d, i) {return 'edgepath' + i})
+    .style("pointer-events", "none").merge(edgepaths);
 
     edgelabels = g.selectAll(".edgelabel")
-        .data(links);
+        .data(links)
 
     var edgelabels_g = edgelabels
         .enter()
         .append('text')
-        .style("pointer-events", "none")
+        .style("pointer-events", "auto") //we need to enable pointer-event so that the mosue event can be received
         .attr('class', 'edgelabel')
         .attr('id', function(d,i) {return 'edgelabel'+i})
         .attr('num_index', function (d) {return d.num_path})
         .attr('font-size', 15)
+        .on("mouseover", tool_tip_edge.show)
+        .on("mouseout", tool_tip_edge.hide)
+        .on("mousedown", ModifyEdge)
         .attr('fill', function(d,i) {return select_edge_color(d)})
 
     //https://developer.mozilla.org/en-US/docs/Web/SVG/Element/textPath
@@ -138,9 +181,13 @@ function update(links, nodes){
     edgelabels_g.append('textPath')
         .attr('xlink:href',function(d,i) {return '#edgepath'+i})
         .attr("startOffset", "50%")
-        .style("pointer-events", "none")
         .style("text-anchor", "middle")
-        .text(function (d) {return d.type});
+        .text(function (d) {return d.type})
+
+    //edgelabels_g.append('circle')
+     //   .attr("r", 20)
+
+        
 
     edgelabels = edgelabels.merge(edgelabels_g);
 
@@ -149,10 +196,11 @@ function update(links, nodes){
 
     node = g.selectAll('.nodes')
         .data(nodes);
-    
+
     var node_g = node
         .enter().append("g")
         .attr("class", "nodes")
+        .attr("id", function (d, i) {return "node" + i;})
         .attr('num_index', function (d) {return d.num_path})
         .call(d3.drag()
                 .on("start", dragstarted)
@@ -162,19 +210,22 @@ function update(links, nodes){
         // );
 
     node_g.append("circle")
+    //node.append("circle")
         .attr("r", 6)
         .attr("fill", function (d,i) {return select_edge_color(d)})
         .on("mousedown", node_mousedown)
+        //.on("mousedown", ModifyNode)
         .on("mouseover", node_mouseover)
         .on("mouseover", tool_tip.show)
-        .on("mouseout", tool_tip.hide)
-        .on("mouseout", node_mouseout);
-
+        .on("mouseout", tool_tip.hide);
+    
     node_g.append("text")
+    //node.append("text")
         .text(function(d) {
             return d.name;
         })
         .attr('dx', 8)
+        .attr("class", "node-text")
         .attr('dy', -3)
         .attr("data-toggle", "modal")
         .attr("data-target", "#exampleModal")
@@ -185,25 +236,21 @@ function update(links, nodes){
     node = node.merge(node_g);
 
     node.exit().remove();
-    // node_g.attr("transform", function(d) {
-    //     console.log(d.index);
-    //     return "translate(" + d.x + "," + d.y + ")";
-    // });
+
+    // var found = false;
+    // for(var i = 0; i < nodes.length; i++) {
+    //     if (nodes[i].id == 112) {
+    //         found = true;
+    //         break;
+    //     }
+    // }
+
     simulation
         .nodes(nodes)
         .on("tick", ticked);
 
     simulation.force("link")
         .links(links);
-
-    //simulation.alpha(0.3).restart();
-    //simulation.alpha(0.3).restart();
-
-    // set positions for nodes
-    // node.each(function(d) {
-    //     d.fx = width / 2;
-    //     d.fy = height;
-    // });
 
     function dragstarted(d) {
         if (!d3.event.active) simulation.alphaTarget(0.4).restart();
@@ -283,40 +330,91 @@ function node_mouseout(d) {
     d3.select(this).transition()
         .duration(150)
         .attr("r", 6);
-    // console.log("node mouseout")
-    // if (drawing_line) {
-    //     selected_target_node = null;
-    // }
 }
 
 // // select node / start drag
 function node_mousedown(d) {
     //d3.event.stopPropagation();
-    if(drawing_line)
+    if(drawing_line || delete_node)
     {
         d3.event.stopPropagation();
-        selected_node = d;
         console.log("node_mousedown")
+        selected_node = d;
     }
-    
-    //selected_link = null;
 
-    // if (!should_drag) {
-    //     d3.event.stopPropagation();
-    //     drawing_line = true;
-    // }
-    // // d.fixed = true;
-    // simulation.stop();
-    // update(link_data, node_data);
-    // simulation.restart();
+    if(should_modify)
+    {
+        console.log("modify the node");
+        $('#node-name-input').attr("value", d.name)
+        $('#NodeModal').modal('toggle');
+        $('#Node-Save-Button').unbind('click').click(function (ev){
+            ev.stopPropagation();
+            var node_name = $('#node-name-input').val();
+            console.log("save button action")
+            var selected_node_index = node_data.indexOf(d)
+            node_data[selected_node_index].name = node_name
+    
+            // simulation.stop();
+            // update(link_data, node_data);
+            // simulation.restart();
+            g.selectAll(".node-text").text(function (d)
+            {
+                return d.name;
+            })
+
+            //hide the modal
+            $('#NodeModal').modal('hide'); 
+            $('#node-name-input').attr("value", "")
+            //selected_node = null;
+        })
+        // $('#Node-Save-Button').unbind('click').click(function (cv){
+        //     ev.stopPropagation();
+        //     selected_node = null;
+        // })
+    }
+}
+
+function ModifyEdge(d)
+{
+    d3.event.stopPropagation();
+    if(should_modify)
+    {
+        console.log("modify the edge");
+        $('#edge-name-input').attr("value", d.type)
+        $('#EdgeModal').modal('toggle');
+        $('#Edge-Save-Button').unbind('click').click(function (ev){
+            ev.stopPropagation();
+            var edge_name = $('#edge-name-input').val();
+            //console.log("save button action")
+            var selected_edge_index = link_data.indexOf(d)
+            link_data[selected_edge_index].type = edge_name
+    
+            // simulation.stop();
+            // update(link_data, node_data);
+            // simulation.restart();
+            g.selectAll("textpath").text(function (d)
+            {
+                return d.type;
+            })
+
+            //hide the modal
+            $('#EdgeModal').modal('hide'); 
+            $('#edge-name-input').attr("value", "")
+            //selected_node = null;
+        })
+        // $('#Node-Save-Button').unbind('click').click(function (cv){
+        //     ev.stopPropagation();
+        //     selected_node = null;
+        // })
+    }
 }
 
 function CreateNode()
 {
     d3.event.stopPropagation();
-    if(should_create)
+    if(should_modify) //shift has been pushsed down
     {
-        
+        console.log("CreateNode: selected_node="+selected_node)
         $('#NodeModal').modal('toggle');
         var x = d3.event.pageX - document.getElementById("svg_for_vis").getBoundingClientRect().x,
             y = d3.event.pageY - document.getElementById("svg_for_vis").getBoundingClientRect().y;
@@ -325,14 +423,14 @@ function CreateNode()
             y = (y - zoomTrans.y)/zoomTrans.scale;
 
         //we need to unbind the previous click event trigger upon this button, otherwise it will bind another same trigger each time we call 'CreateNode'
-        $('#Modal-Save-Button').unbind('click').click(function (ev){
+        $('#Node-Save-Button').unbind('click').click(function (ev){
             ev.stopPropagation();
             console.log("save button; x="+x+"; y="+y)
             var node_name = $('#node-name-input').val();
-             //console.log("creating node")
-             //calculate the relative coordinate in terms of the svg canvas
+                //console.log("creating node")
+                //calculate the relative coordinate in terms of the svg canvas
             console.log("save button action")
-            node = {"x": x, "y": y, "id": node_data.length, "num_path": 10, "name": node_name},
+            node = {"x": x, "y": y, "id": node_data.length, "num_path": 1, "name": node_name},
             node_data.push(node);
 
             simulation.stop();
@@ -354,7 +452,7 @@ function mousemove() {
         // debounce - only start drawing line if it gets a bit big
         var dx = selected_node.x - x;
         var dy = selected_node.y - y;
-        console.log("mouse move: dx="+dx+", dy="+dy)
+        //console.log("mouse move: dx="+dx+", dy="+dy)
         if (Math.sqrt(dx * dx + dy * dy) > 10) {
             
             // draw a line
@@ -367,7 +465,7 @@ function mousemove() {
                 .attr("y2", function(d) { return y; });
         }
     }
-    update(link_data, node_data);
+    //update(link_data, node_data);
 }
 
 // end node select / add new connected node
@@ -379,17 +477,27 @@ function mouseup() {
         if (selected_target_node) {
             if(selected_target_node != selected_node)
             {
-                console.log("selected target node is existed")
+                // console.log("selected target node is existed")
                 selected_target_node.fixed = false;
                 var new_node = selected_target_node;
     
                 //add the new edge
-                selected_node.fixed = false;
-                link_data.push({"source": selected_node.id, "target": new_node.id, "type": "New_Relation", "num_path": [1,2]})
-                selected_node = selected_target_node = null;
-                update(link_data, node_data);
+                $('#EdgeModal').modal('toggle');
+
+                $('#Edge-Save-Button').unbind('click').click(function (ev){
+                    var edge_name = $('#edge-name-input').val();
+                    selected_node.fixed = false;
+                    //num_path is currently filled by placeholder
+                    console.log("source id: "+selected_node.id+"; target id: "+new_node.id)
+                    link_data.push({"source": selected_node.id, "target": new_node.id, "type": edge_name, "num_path": [1,2]})  
+                    simulation.stop();
+                    update(link_data, node_data);
+                    simulation.restart();
+                    $('#EdgeModal').modal('hide');
+                    selected_node = selected_target_node = null;
+                })
+                
             }
-           
         }
         //delete the yellow line
         setTimeout(function () {
@@ -397,6 +505,45 @@ function mouseup() {
             new_line = null;
             simulation.restart();
         }, 30);
+    }
+    if(delete_node)
+    {
+        if (selected_node) { // deal with nodes
+            //alternative solution: hide the selected node and edges related to it
+            var node_index = node_data.indexOf(selected_node)
+            $('#node'+node_index).hide();
+
+            link_data.forEach(function (l){
+                if(l.source.id == selected_node.id || l.target.id == selected_node.id) {
+                    var edge_index = link_data.indexOf(l)
+                    $('#link'+edge_index).hide()
+                    $('#edgepath'+edge_index).hide()
+                    $('#edgelabel'+edge_index).hide()
+                }
+            })
+            selected_node = null;
+            // var i = node_data.indexOf(selected_node);
+            // node_data.splice(i, 1);
+            // // find links to/from this node, and delete them too
+            // var new_links = [];
+            // link_data.forEach(function(l) {
+            //     if (l.source.id !== selected_node.id && l.target.id !== selected_node.id) {
+            //         new_links.push(l);
+            //     }
+            // });
+            // link_data = new_links;
+            // simulation.stop();
+            // update(link_data, node_data);
+            // simulation.restart();
+
+            // selected_node = null;
+        }
+        // } else if (selected_link) { // deal with links
+        //     var i = link_data.indexOf(selected_link);
+        //     link_data.splice(i, 1);
+        //     // selected_link = link_data.length ? links[i > 0 ? i - 1 : 0] : null;
+        // }
+        //update(link_data, node_data);
     }
 }
 
@@ -407,7 +554,7 @@ function allowDrop(ev) {
 function keyup() {
     switch (d3.event.keyCode) {
         case 16: { // shift
-            should_create = false;
+            should_modify = false;
             break;
             // update(link_data, node_data);
             // simulation.restart();
@@ -423,7 +570,11 @@ function keyup() {
                     simulation.restart();
                 }, 30);
             }
-           
+           break;
+        }
+        case 46: {
+            delete_node = false;
+            break;
         }
     }
 }
@@ -432,31 +583,15 @@ function keyup() {
 function keydown() {
     switch (d3.event.keyCode) {
         case 8: // backspace
+        {
+            break;
+        }
         case 46: { // delete
-            if (selected_node) { // deal with nodes
-                var i = node_data.indexOf(selected_node);
-                node_data.splice(i, 1);
-                // find links to/from this node, and delete them too
-                var new_links = [];
-                link_data.forEach(function(l) {
-                    // console.log(l);
-                    // console.log(selected_node);
-                    if (l.source.id !== selected_node.id && l.target.id !== selected_node.id) {
-                        new_links.push(l);
-                    }
-                });
-                link_data = new_links;
-                // selected_node = node_data.length ? nodes[i > 0 ? i - 1 : 0] : null;
-            } else if (selected_link) { // deal with links
-                var i = link_data.indexOf(selected_link);
-                link_data.splice(i, 1);
-                // selected_link = link_data.length ? links[i > 0 ? i - 1 : 0] : null;
-            }
-            //update(link_data, node_data);
+            delete_node = true;
             break;
         }
         case 16: { //shift
-            should_create = true;
+            should_modify = true;
             break;
         }
         case 17: { //control

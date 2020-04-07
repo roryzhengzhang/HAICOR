@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block header %}
+    <nav class="navbar navbar-light bg-light" style="background-color: #e3f2fd;">
+        <span class="navbar-brand mb-0 h1">HAICOR</span>
+    </nav>
+    <h2 class="page_title"> Story example </h2>
+    <div id="task-text">
+        <h4>How AI predict human needs based on story and commonsense graph?</h4>
+
+        <div style="text-align: center; margin-bottom: 5px;">
+            <img id="story-image" width="40%" height="40%" src={{img_source}}>
+        </div>
+
+        <p>To be specific, the AI will find paths connecting ‘human need’ and keywords, those human needs arrivable from keywords are viewed as candidate. For
+            example, for the sentence “He came home with a gold medal”, the AI will extract the keyword like ‘gold’, ‘medal’ and ‘god medal’, according to the subgraph,
+            the human needs ‘status’ will be a candidate thanks to the paths among it and keywords. Then the AI will score each path with a standard metric, and predict
+            the most likely human need according to the top-ranked paths and story context.
+        </p>
+
+        
+
+        <div style="text-align: center" class="button-div">
+            <a class="btn btn-primary" href="{{url_for('visualized_exp')}}">Next</a>
+        </div>
+    </div>
+{% endblock header %}

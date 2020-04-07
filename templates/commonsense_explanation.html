@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block header %}
+    <nav class="navbar navbar-light bg-light" style="background-color: #e3f2fd;">
+        <span class="navbar-brand mb-0 h1">HAICOR</span>
+    </nav>
+    <h2 class="page_title"> Explanation of Terminology </h2>
+    <div id="task-text">
+        <h4>What is commonsense knowledge?</h4>
+        <p>All the knowledge we take as granted can be seen as commonsense knowledge. Formally, the commonsense is defined as ' implications shared by the competent 
+            users of a language'. The first type of coomonsense knoledge is from human's good sense: 'the knacks for seeing things as they are and doing thing as they ought
+             to be done'; Besides, commonsense can also be folk wisdom: "signifying unreflective knowledge not reliant on specialized training or deliberative thought". 
+              </p>
+
+        <h4>How commonsense exists in AI? </h4>
+        <div class="row" style="display: flex;">
+            <div class="col-6"><img src={{img_source}}  style="padding: 5px; margin: 10px;" width="100%"></div>
+            <div class="col-6"><img src={{further_step_image}}  style="padding: 5px; margin: 10px;" width="100%"></div>
+            <!-- <div class="col-6" style="padding-top: 20px;"><p style="padding: 5px; display: inline;" class="col-6" width="100%"> 
+                The left is a snippet of commonsense knowledge about  TV series, based on this KG, the AI could infer that: 'Band of Brothers' is an English
+                TV program' since we can find a path from 'Band of Brothers' to 'English'</p>
+            </div> -->
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <p width="100%"> 
+                The top left is a snippet of commonsense knowledge about  TV series, based on this KG, the AI could infer that: 'Band of Brothers' is an English
+                TV program' since we can find a path from 'Band of Brothers' to 'English', the top right is showing how we search the answer step-by-step.</p>
+            <strong>
+                How does the knowledge graph build up? 
+            </strong>
+            <p>Computer scientists collect the relation among various concepts from the following main venues: 
+            </p>
+            <ul id="relation-source">
+                <li>Wikipedia</li>
+                <li>English dictionary</li>
+                <li>Crowdsoucring</li>
+            </ul>
+            <p>For example, The relation 'Band of Brother --castActor--> Neal McDonough' is drawn from Wikipedia 
+                item 'Band of Brother' whose casting includes 'Neal McDonough as First Lieutenant Lynn
+                "Buck" Compton', and from item 'Neal McDonough' we can know his mother language is English
+             </p>
+        </div>
+
+        <div style="text-align: center" class="button-div">
+            <a class="btn btn-primary" href="{{url_for('story_example')}}">Next</a>
+        </div>
+    </div>
+{% endblock header %}
