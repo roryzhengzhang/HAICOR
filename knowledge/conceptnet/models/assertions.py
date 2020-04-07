@@ -36,7 +36,7 @@ class License(database.Model):
     __tablename__ = "licenses"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, index=True, unique=True, nullable=False)
+    uri = Column(String, index=True, unique=True, nullable=False)
 
     assertions = relationship("Assertion", back_populates="license")
 

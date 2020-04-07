@@ -1,5 +1,5 @@
 # files generatable via make
 conceptnet-assertions-5.7.0.csv.gz
 englishnet-assertions-5.7.0.csv.gz
-knowledge-database.sqlite3
-knowledge-database.sqlite3-journal
+knowledge-database.sqlite
+knowledge-database.sqlite-journal

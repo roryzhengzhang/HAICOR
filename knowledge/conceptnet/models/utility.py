@@ -142,24 +142,24 @@ def query_dataset(session, uri: str) -> Dataset:
     return create_dataset(session, uri)
 
 
-def create_license(session, name: str) -> License:
+def create_license(session, uri: str) -> License:
     """Creates and returns a License instance using the parameters.
 
     Creates and returns a License instance using the parameters. If the License
     instance already exists in the database, returns the database instance.
     """
 
-    result = session.query(License).filter_by(name=name).one_or_none()
+    result = session.query(License).filter_by(uri=uri).one_or_none()
     if result is None:
-        result = License(name=name)
+        result = License(uri=uri)
         session.add(result)
 
     return result
 
 
 @cached(cache={}, key=lambda a, b: hashkey(b))
-def query_license(session, name: str) -> License:
-    return create_license(session, name)
+def query_license(session, uri: str) -> License:
+    return create_license(session, uri)
 
 
 def create_assertion(session, relation: str, source: str, target: str,
