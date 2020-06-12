@@ -170,7 +170,7 @@ function update(links, nodes){
         .attr('class', 'edgelabel')
         .attr('id', function(d,i) {return 'edgelabel'+i})
         .attr('num_index', function (d) {return d.num_path})
-        .attr('font-size', 15)
+        .attr('font-size', 12)
         .on("mouseover", tool_tip_edge.show)
         .on("mouseout", tool_tip_edge.hide)
         .on("mousedown", ModifyEdge)

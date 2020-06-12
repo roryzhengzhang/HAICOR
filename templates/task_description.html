@@ -7,18 +7,26 @@
     <h2 class="page_title"> Task Description </h2>
     <div id="task-text">
         <h4>AI's task</h4>
-        <p>We have an smart AI whose job is to read a simple story and speculate the basic human needs behind the character's behavior. However, 
-        most of these human needs are not spoken out in the story, the AI has to reason about the answer based on its commonsense knowledge.
-        AI's knowledge can be represented as a connected graph like below, where each node represents a specific concept (existent: book, car, 
+        <p>We have an smart AI whose job is to <strong> read a simple story</strong> and <strong>speculate the basic human needs</strong> behind the character's behavior. However, 
+        most of these human needs are not spoken out in the story, the AI has to <strong>reason about</strong> the answer based on its <strong>commonsense knowledge</strong>.
+        AI's knowledge can be represented as a <strong>connected graph</strong>, where each node represents a specific concept (existent: book, car, 
         shop, etc; non-existent: morning, happy, eat, etc) and edge correpsonds to the relation between two concepts (comedy 'causes' happy). This
         knowledge graph enables AI to 'think deeper' than just stay on the literal description of story.  </p>
 
-        <h4>Your task </h4>
-        <p> We have an smart AI whose job is to read a simple story and speculate the basic human needs behind the character's behavior. However, 
-        most of these human needs are not spoken out in the story, the AI has to reason about the answer based on its commonsense knowledge.
-        AI's knowledge can be represented as a connected graph like below, where each node represents a specific concept (existent: book, car, 
-        shop, etc; non-existent: morning, happy, eat, etc) and edge correpsonds to the relation between two concepts (comedy 'causes' happy). This
-        knowledge graph enables AI to 'think deeper' than just stay on the literal description of story.</p>
+        <h4>How AI makes reasoning? </h4>
+        <p> First, let's think of how our human makes reasoning. General speaking, our human maintains enormous logic rules in our brain, for each
+            rule A --c--> B, it tells us B can be achieved given A based on the relation C. For example, the rule <i>‘exam --- causes ---> study’</i> means 
+           that if we have ‘exam’ in our brain, the concept ‘study’ will be perceived since it can be obtained through this rule. In our case, the proper 
+           human needs are those reachable along the chain of rules starting from the keywords in the story. <br> <br>
+           
+           Our AI imitates the human reasoning strategy. Briefly, the AI will read a pair of story and question and maintain a knowledge graph (KG) at
+            the same time, it will then reason about the human needs based on the keywords in the context and question over the KG. </p>
+
+        <div style="text-align: center;">
+            <img src="{{general_explanation_img}}" width="70%">
+        </div>
+        
+        <p style="margin-top: 5px;"><strong>Click NEXT</strong> to see the explanation of keywords in this description.</p>
 
         <div style="text-align: center" class="button-div">
             <a class="btn btn-primary" href="{{url_for('human_needs_explanation')}}">Next</a>

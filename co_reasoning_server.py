@@ -6,7 +6,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 @app.route('/')
 def index():
     #print(os.path.dirname(app.instance_path))
-    resp = make_response(render_template('index.html', css=url_for('static', filename="main.css")))
+    #resp = make_response(render_template('index.html', css=url_for('static', filename="main.css")))
+    resp = make_response(render_template('tree_editor.html'))
     resp.headers['Access-Control-Allow-Origin'] = '*' #to support the cross origin request
     resp.cache_control.max_age = 1
     return resp
@@ -14,7 +15,8 @@ def index():
 
 @app.route('/task_description')
 def task_description():
-    resp = make_response(render_template('task_description.html', css=url_for('static', filename="main.css")))
+    resp = make_response(render_template('task_description.html', css=url_for('static', filename="main.css"),
+    general_explanation_img=url_for('static', filename="general_explanation_chart.JPG")))
     return resp
 
 @app.route('/human_needs_explanation')
@@ -26,6 +28,15 @@ def human_needs_explanation():
 def commonsense_explanation():
     resp = make_response(render_template('commonsense_explanation.html', css=url_for('static', filename="main.css"),  img_source=url_for('static', filename="sample_kg.JPG"), 
     further_step_image=url_for('static', filename="step-by-step image.png")))
+    return resp
+
+@app.route('/user_task_description')
+def user_task_description():
+    resp = make_response(render_template('user_task_description.html', css=url_for('static', filename="main.css"), 
+    interaction_img=url_for('static', filename="interaction_illustration.JPG"),
+    modified_img=url_for('static', filename="modified_path.JPG"),
+    node_hover_img=url_for('static', filename="node_hover.JPG"),
+    edge_hover_img=url_for('static', filename="edge_hover.JPG")))
     return resp
 
 @app.route('/story_example')

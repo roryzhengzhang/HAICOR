@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block header %}
+    <nav class="navbar navbar-light bg-light" style="background-color: #e3f2fd;">
+        <span class="navbar-brand mb-0 h1">HAICOR</span>
+    </nav>
+    <h2 class="page_title"> Your Task Description </h2>
+    <div id="task-text">
+        <h4>What you are invited to do?</h4>
+        <p>Our AI is far from 'perfect', it may have chance to predict human needs with an inappropriate path, which causes the prediction going awry. your job is to identify
+            the inadequacy of reasoning paths it employs and rectify the place where you don't agree with. To modify the graph, you are allowed to add, delete, alter the 
+           concepts (node) and relations (edge) freely, the criteria is that you need to inject your own knowledge into the path modification as much as possible. As you are
+            satisfied with your revision of the paths, you are invited to select the top-K paths that you believe will lead the AI to find the right human needs, based on which
+            our AI will re-predict and display the updated humans needs to you. You will then be asked to evaluate the quality of the updated answer.  </p>
+        <br> <br>
+        <p>Here is the graphical illustration of your interaction with AI: </p>
+
+        <div style="text-align: center;">
+            <img src="{{interaction_img}}" width="70%">
+        </div>
+
+        <h4>What you can do with the modification?</h4>
+        <p>The concept meaning in each relation will be displayed when you hover over the node, likewise, when you hover over the relation, the information about it 
+            will pop up, these may help you decide what goes wrong in a step of reasoning.</p>
+
+        <div style="text-align: center; margin-bottom: 5px;">
+            <img id="node_hover-image" width="30%" src={{node_hover_img}}>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 5px;">
+            <img id="edge_hover-image" width="30%" src={{edge_hover_img}}>
+        </div>
+
+        <p>Based on your thought, you can use add/delete/modify operations to make one reasoning path more reasonable in the story context.</p>
+
+        <div style="text-align: center; margin-bottom: 5px;">
+            <img id="modified-image" width="30%" src={{modified_img}}>
+        </div>
+        
+        <p style="margin-top: 5px;"><strong>Click NEXT</strong> to enter the modification workspace.</p>
+
+        <div style="text-align: center" class="button-div">
+            <a class="btn btn-primary" href="{{url_for('index')}}">Next</a>
+        </div>
+    </div>
+{% endblock header %}
