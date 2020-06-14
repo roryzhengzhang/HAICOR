@@ -1,5 +1,14 @@
 function close_modal() {
-    $(document).foundation('reveal', 'close');
+    //$(document).foundation('reveal', 'close');
+    $('#RenameNodeModal').foundation('close');
+}
+
+function close_rename_node_modal() {
+    $('#RenameNodeModal').foundation('toggle');
+}
+
+function close_create_node_modal() {
+    $('#CreateNodeModal').foundation('toggle');
 }
 
 var tree_root;
@@ -8,6 +17,7 @@ var rename_node_modal_active = false;
 var create_node_parent = null;
 var node_to_rename = null;
 
+//create an unique id for each node
 function generateUUID(){
 var d = new Date().getTime();
 var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -28,6 +38,7 @@ function create_node() {
                     create_node_parent.children = [];
             }
             id = generateUUID(); 
+            
             name = $('#CreateNodeName').val();
             new_node = { 'name': name, 
                          'id' :  id,
@@ -36,12 +47,16 @@ function create_node() {
                          '_children':null 
                        };
             console.log('Create Node name: ' + name);
+            //add the new created node to the children list of its parent
             create_node_parent.children.push(new_node);
+            //finish the creation of new node
             create_node_modal_active = false;
+            //reset '#CreateNodeName' as void string
             $('#CreateNodeName').val('');
 
     }
-    close_modal();
+    //close_modal();
+    //close_create_node_modal();
     outer_update(create_node_parent);
 }
 
@@ -53,7 +68,9 @@ function rename_node() {
             rename_node_modal_active = false;
 
     }
-    close_modal();
+    //close_modal();
+    //close_rename_node_modal();
+    //update the whole layout
     outer_update(node_to_rename);
 }
 
@@ -79,10 +96,13 @@ var root;
 var viewerWidth = $(document).width();
 var viewerHeight = $(document).height();
 
+//init the tree structure
 var tree = d3.layout.tree()
     .size([viewerHeight, viewerWidth]);
 
 // define a d3 diagonal projection for use by the node paths later on.
+// d3.svg.diagonal returns function that accepts datum and its index and transforms it to path using projection. 
+// In other words diagonal.projection determines how the function will get points' coordinates from supplied datum.
 var diagonal = d3.svg.diagonal()
     .projection(function(d) {
         return [d.y, d.x];
@@ -97,7 +117,10 @@ var menu = [
                         rename_node_modal_active = true;
                         node_to_rename = d
                         $("#RenameNodeName").focus();
-                        $('#RenameNodeModal').foundation('reveal', 'open');
+                        //Reveal is 'pop-up modal'
+                        var popup = new Foundation.Reveal($('#RenameNodeModal'));
+                        popup.open();
+                        //$('#RenameNodeModal').foundation('reveal', 'open');
                 }
         },
         {
@@ -139,6 +162,8 @@ function visit(parent, visitFn, childrenFn) {
 }
 
 // Call visit function to establish maxLabelLength
+// The first function is for global purpose
+// The second function is to get the children list of parental node 
 visit(treeData, function(d) {
     totalNodes++;
     maxLabelLength = Math.max(d.name.length, maxLabelLength);
@@ -147,11 +172,14 @@ visit(treeData, function(d) {
     return d.children && d.children.length > 0 ? d.children : null;
 });
 
+
 function delete_node(node) {
     visit(treeData, function(d) {
            if (d.children) {
                    for (var child of d.children) {
                            if (child == node) {
+                               // '_' is used in underscore.js, it offers over 100 helper functions for collection
+                               // '_.without()' will return the array with all instance of specified value removed
                                    d.children = _.without(d.children, child);
                                    update(root);
                                    break;
@@ -172,7 +200,7 @@ function sortTree() {
         return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
     });
 }
-// Sort the tree initially incase the JSON isn't in a sorted order.
+// Sort the tree initially in case the JSON isn't in a sorted order.
 sortTree();
 
 // TODO: Pan function, can be better implemented.
@@ -203,13 +231,14 @@ function pan(domNode, direction) {
 }
 
 // Define the zoom function for the zoomable tree
-
+//define the zoom function by setting translate and scale value
 function zoom() {
     svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
 
 
 // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
+//scale extent defines the min and max scale factor
 var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
 
 function initiateDrag(d, domNode) {
@@ -360,7 +389,7 @@ function endDrag() {
 }
 
 // Helper functions for collapsing and expanding nodes.
-
+//recursive function for 'collapse' and 'expand'
 function collapse(d) {
     if (d.children) {
         d._children = d.children;
@@ -472,6 +501,7 @@ function click(d) {
     centerNode(d);
 }
 
+//update the layout and node/edge display
 function update(source) {
     // Compute the new height, function counts total children of root node and sets tree height accordingly.
     // This prevents the layout looking squashed when new nodes are made visible or looking sparse when nodes are removed
