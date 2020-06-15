@@ -1,0 +1,6 @@
+# vscode configuration files
+.vscode/
+
+# python .gitignore
+.venv/
+__pycache__/
