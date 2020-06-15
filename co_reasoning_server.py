@@ -1,5 +1,10 @@
-from flask import Flask, make_response, render_template, url_for
 import os
+
+from flask import (Flask, jsonify, make_response, render_template, request,
+                   url_for)
+
+import tree
+
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
@@ -59,6 +64,21 @@ def test():
     resp.headers['Access-Control-Allow-Origin'] = '*' #to support the cross origin request
     resp.cache_control.max_age = 1
     return resp
+
+@app.route("/post/submit_tree", methods=["GET", "POST"])
+def submit_tree():
+    """
+    **Temporary view function.**
+
+    This view allows front-end to submit a modified tree as a JSON. The raw data
+    will be cleaned and can be used by other functions.
+    """
+    
+    data = tree.cleanup(request.get_json(force=True))
+
+    print(data)
+
+    return jsonify(success=True)
 
 if __name__ == '__main__':
     app.run(debug = True)    

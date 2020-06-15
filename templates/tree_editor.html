@@ -54,7 +54,7 @@
 
         <div id="tree-container"></div>
 
-        <button onclick="console.log(tree_root)" style="width: 100%;">Export to console</button>
+        <button onclick="submit_tree();" style="width: 100%;">Export to console</button>
 
         <script src="https://d3js.org/d3.v3.js"></script>
         <script src="../static/dndTree.js"></script>
@@ -84,6 +84,21 @@
                     });
                     var treeJSON = d3.json("../static/tree.json", draw_tree);
                 });
+        </script>
+
+        <script>
+          function submit_tree() {
+            fetch("post/submit_tree", {
+              method: "POST",
+              body: JSON.stringify(tree_root, function(key, value) {
+                if (key == "parent") {
+                  return null;
+                } else {
+                  return value;
+                }
+              })
+            });
+          }
         </script>
 </body>
 </html>
